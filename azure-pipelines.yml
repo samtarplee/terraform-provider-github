@@ -12,13 +12,13 @@ steps:
 - script: echo Hello, world!
   displayName: 'Run a one-line script'
 
-- script: |
-    # Set git config to allow long paths
-    Write-Host "Setting git long paths."
-    git config --system core.longpaths true
-  displayName: 'Run a multi-line script'
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'git config --system core.longpaths true'
 
-- task: DotNetCoreInstaller@1
+
+- task: UseDotNet@2 
   inputs:
     packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
     version: '7.x' # string. Required. Version. Default: 2.2.x.
@@ -27,7 +27,7 @@ steps:
     #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
     #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
 
-- task: DotNetCoreInstaller@1
+- task: UseDotNet@2 
   inputs:
     packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
     version: '8.x' # string. Required. Version. Default: 2.2.x.
