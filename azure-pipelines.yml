@@ -13,6 +13,29 @@ steps:
   displayName: 'Run a one-line script'
 
 - script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
+    # Set git config to allow long paths
+    Write-Host "Setting git long paths."
+    git config --system core.longpaths true
   displayName: 'Run a multi-line script'
+
+# NuGet tool installer v1
+# Acquires a specific version of NuGet from the internet or the tools cache and adds it to the PATH. Use this task to change the version of NuGet used in the NuGet tasks.
+- task: NuGetToolInstaller@1
+
+- task: DotNetCoreInstaller@1
+  inputs:
+    packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
+    version: '7.x' # string. Required. Version. Default: 2.2.x.
+    #includePreviewVersions: false # boolean. Include Preview Versions. Default: false.
+  # Advanced
+    #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
+    #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
+
+- task: DotNetCoreInstaller@1
+  inputs:
+    packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
+    version: '8.x' # string. Required. Version. Default: 2.2.x.
+    #includePreviewVersions: false # boolean. Include Preview Versions. Default: false.
+  # Advanced
+    #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
+    #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
