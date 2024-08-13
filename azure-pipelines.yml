@@ -40,13 +40,24 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      # Download NuGet.exe
-      Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $(System.DefaultWorkingDirectory)\nuget.exe
-      
-      # Add NuGet to the PATH
-      $nugetPath = "$(System.DefaultWorkingDirectory)"
-      [Environment]::SetEnvironmentVariable("PATH", $nugetPath + ";" + [Environment]::GetEnvironmentVariable("PATH", "Machine"), "Machine")
-      
+      # Create a directory for NuGet if it doesn't exist
+      $nugetDir = "C:\Program Files\NuGet"
+      if (-Not (Test-Path $nugetDir)) {
+          New-Item -Path $nugetDir -ItemType Directory
+      }
+
+      # Download NuGet.exe to the system-wide directory
+      Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile "$nugetDir\nuget.exe"
+
+      # Add the directory to the system-wide PATH
+      $path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+      if ($path -notlike "*$nugetDir*") {
+          [System.Environment]::SetEnvironmentVariable("Path", "$path;$nugetDir", [System.EnvironmentVariableTarget]::Machine)
+      }
+
+      # Reload PATH
+      $env:PATH = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
+
       # Optionally, verify the installation
       nuget.exe help
-  displayName: 'Install NuGet and Add to PATH'
+  displayName: 'Install NuGet and Update System PATH'
