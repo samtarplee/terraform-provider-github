@@ -36,14 +36,17 @@ steps:
     #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
     #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
 
-- script: |
-    # Download NuGet.exe
-    Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $(System.DefaultWorkingDirectory)\nuget.exe
-    
-    # Add NuGet to the PATH
-    $nugetPath = "$(System.DefaultWorkingDirectory)"
-    [Environment]::SetEnvironmentVariable("PATH", $nugetPath + ";" + [Environment]::GetEnvironmentVariable("PATH", "Machine"), "Machine")
-    
-    # Optionally, verify the installation
-    nuget.exe help
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Download NuGet.exe
+      Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $(System.DefaultWorkingDirectory)\nuget.exe
+      
+      # Add NuGet to the PATH
+      $nugetPath = "$(System.DefaultWorkingDirectory)"
+      [Environment]::SetEnvironmentVariable("PATH", $nugetPath + ";" + [Environment]::GetEnvironmentVariable("PATH", "Machine"), "Machine")
+      
+      # Optionally, verify the installation
+      nuget.exe help
   displayName: 'Install NuGet and Add to PATH'
