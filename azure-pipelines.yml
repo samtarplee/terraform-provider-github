@@ -36,7 +36,6 @@ steps:
     #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
     #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
 
-- task: PowerShell@2
+- task: NuGetToolInstaller@1
   inputs:
-    targetType: 'inline'
-    script: 'dotnet new -i NuGet.CommandLine'
+    checkLatest: true
