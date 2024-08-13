@@ -37,3 +37,10 @@ steps:
     #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
 
 - task: NuGetToolInstaller@1
+  inputs:
+    checkLatest: true
+
+- task: NuGetCommand@2
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
