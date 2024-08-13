@@ -36,6 +36,19 @@ steps:
     #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
     #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
 
-- task: NuGetToolInstaller@1
-  inputs:
-    versionSpec: '6.x.x'  # Replace with the desired version of NuGet
+- powershell: |
+    # Define the URL for the latest NuGet.exe
+    $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+    
+    # Define the path where you want to save NuGet.exe
+    $nugetPath = "$(Build.SourcesDirectory)\nuget.exe"
+    
+    # Download nuget.exe
+    Invoke-WebRequest -Uri $nugetUrl -OutFile $nugetPath
+    
+    # Add NuGet to the PATH for this session
+    $env:PATH += ";$(Build.SourcesDirectory)"
+    
+    # Verify the installation
+    .\nuget.exe
+  displayName: 'Download and Install NuGet'
