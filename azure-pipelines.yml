@@ -10,6 +10,6 @@ pool: eit-uks-prd-win-ado-agent-pool
 
 steps:
 - script: |
-    df
+    wmic diskdrive get size
     systeminfo
   displayName: 'Run a one-line script'
