@@ -19,19 +19,11 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-            $folders = @("$env:TEMP\M365Management\FileCache", "$env:TEMP\tmpEXO*")
-            while ($true) {
-                foreach ($folder in $folders) {
-                    $files = Get-ChildItem -Path $folder -Recurse -ErrorAction SilentlyContinue
-                    if ($files) {
-                        $size = ($files | Measure-Object Length -Sum).Sum / 1MB
-                        $fileCount = $files.Count
-                        Write-Host "Folder: $folder"
-                        Write-Host "File count: $fileCount"
-                        Write-Host "Total size: $([math]::Round($size, 2)) MB"
-                        Write-Host ""
-                    } else {
-                        Write-Host "Folder: $folder not found or no files."
-                    }
-                }
+            $tempPath = [System.IO.Path]::GetTempPath()
+            # Get all folders in the TEMP directory
+            $folders = Get-ChildItem -Path $tempPath -Directory
+            
+            # Display the folder names
+            foreach ($folder in $folders) {
+                Write-Host $folder.FullName
             }
