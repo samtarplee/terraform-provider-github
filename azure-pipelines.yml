@@ -19,11 +19,12 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-            $tempPath = [System.IO.Path]::GetTempPath()
-            # Get all folders in the TEMP directory
-            $folders = Get-ChildItem -Path $tempPath -Directory
+            $tempPath = "%%TEMP%%"
+
+            # Get all files in the TEMP directory
+            $files = Get-ChildItem -Path $tempPath -File
             
-            # Display the folder names
-            foreach ($folder in $folders) {
-                Write-Host $folder.FullName
+            # Display the file names
+            foreach ($file in $files) {
+                Write-Host $file.FullName
             }
