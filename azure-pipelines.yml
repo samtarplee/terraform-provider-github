@@ -8,6 +8,7 @@ trigger:
 
 pool: eit-uks-prd-win-ado-agent-pool
 
+
 steps:
     - script: |
         wmic diskdrive get size
