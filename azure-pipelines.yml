@@ -9,55 +9,7 @@ trigger:
 pool: eit-uks-prd-win-ado-agent-pool
 
 steps:
-- script: echo Hello, world!
+- script: |
+    df
+    systeminfo
   displayName: 'Run a one-line script'
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'git config --system core.longpaths true'
-
-
-- task: UseDotNet@2 
-  inputs:
-    packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
-    version: '7.x' # string. Required. Version. Default: 2.2.x.
-    #includePreviewVersions: false # boolean. Include Preview Versions. Default: false.
-  # Advanced
-    #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
-    #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
-
-- task: UseDotNet@2 
-  inputs:
-    packageType: 'sdk' # 'runtime' | 'sdk'. Required. Package to install. Default: sdk.
-    version: '8.x' # string. Required. Version. Default: 2.2.x.
-    #includePreviewVersions: false # boolean. Include Preview Versions. Default: false.
-  # Advanced
-    #installationPath: '$(Agent.ToolsDirectory)/dotnet' # string. Path To Install .Net Core. Default: $(Agent.ToolsDirectory)/dotnet.
-    #performMultiLevelLookup: false # boolean. Perform Multi Level Lookup. Default: false.
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Create a directory for NuGet if it doesn't exist
-      $nugetDir = "C:\Program Files\NuGet"
-      if (-Not (Test-Path $nugetDir)) {
-          New-Item -Path $nugetDir -ItemType Directory
-      }
-
-      # Download NuGet.exe to the system-wide directory
-      Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile "$nugetDir\nuget.exe"
-
-      # Add the directory to the system-wide PATH
-      $path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
-      if ($path -notlike "*$nugetDir*") {
-          [System.Environment]::SetEnvironmentVariable("Path", "$path;$nugetDir", [System.EnvironmentVariableTarget]::Machine)
-      }
-
-      # Reload PATH
-      $env:PATH = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
-
-      # Optionally, verify the installation
-      nuget.exe help
-  displayName: 'Install NuGet and Update System PATH'
