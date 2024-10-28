@@ -18,9 +18,7 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-            Get-PSDrive C | Select-Object @{Name='UsedGB';Expression={[math]::round($_.Used / 1GB, 2)}}, @{Name='FreeGB';Expression={[math]::round($_.Free / 1GB, 2)}}
-
-            Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
+           Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
                 $partitions = Get-CimInstance -Query "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='$($_.DeviceID)'} WHERE AssocClass=Win32_DiskDriveToDiskPartition"
                 $totalSize = $_.Size
                 $allocatedSize = ($partitions | Measure-Object -Property Size -Sum).Sum
@@ -31,6 +29,6 @@ steps:
                     AllocatedSizeGB    = [math]::round($allocatedSize / 1GB, 2)
                     UnallocatedSizeGB   = [math]::round($unallocatedSize, 2)
                 }
-            }
+           }
 
             
