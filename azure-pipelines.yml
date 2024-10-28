@@ -11,20 +11,5 @@ pool: eit-uks-prd-win-ado-agent-pool
 
 steps:
     - script: |
-        wmic diskdrive get size
-        systeminfo
+        wmic logicaldisk where "DeviceID='C:'" get FreeSpace, Size
       displayName: 'Run a one-line script'
-      
-    - task: PowerShell@2
-      inputs:
-        targetType: 'inline'
-        script: |
-            $tempPath = "%%TEMP%%"
-
-            # Get all files in the TEMP directory
-            $files = Get-ChildItem -Path $tempPath -File
-            
-            # Display the file names
-            foreach ($file in $files) {
-                Write-Host $file.FullName
-            }
