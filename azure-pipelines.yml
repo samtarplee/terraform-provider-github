@@ -11,5 +11,12 @@ pool: eit-uks-prd-win-ado-agent-pool
 
 steps:
     - script: |
+        wmic logicaldisk get DeviceID, VolumeName, FileSystem, FreeSpace, Size
         wmic logicaldisk where "DeviceID='C:'" get FreeSpace, Size
       displayName: 'Run a one-line script'
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+            Get-PSDrive C | Select-Object @{Name='UsedGB';Expression={[math]::round($_.Used / 1GB, 2)}}, @{Name='FreeGB';Expression={[math]::round($_.Free / 1GB, 2)}}
+            
