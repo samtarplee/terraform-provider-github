@@ -23,9 +23,12 @@ steps:
             
             # Get the physical disk associated with the OS partition
             $disk = Get-Disk -Number $partition.DiskNumber
+
+            $size = (Get-PartitionSupportedSize -DiskNumber $disk.Number -PartitionNumber $partition.PartitionNumber)
+            Write-Host "Size: $size"
             
             # Resize the partition to use the full disk space
-            Resize-Partition -DiskNumber $disk.Number -PartitionNumber $partition.PartitionNumber -Size ($disk | Select-Object -ExpandProperty Size)
+            Resize-Partition -DiskNumber $disk.Number -PartitionNumber $partition.PartitionNumber -Size $size.SizeMax
 
     - task: PowerShell@2
       inputs:
