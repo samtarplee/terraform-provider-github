@@ -27,10 +27,10 @@ steps:
             "@
             
             # Write to a temporary file
-            $diskpartScript | Out-File -FilePath "C:\temp\diskpart.txt"
+            $diskpartScript | Out-File -FilePath "C:\diskpart.txt"
             
             # Run diskpart
-            diskpart /s "C:\temp\diskpart.txt"
+            diskpart /s "C:\diskpart.txt"
 
     - task: PowerShell@2
       inputs:
