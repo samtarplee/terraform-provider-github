@@ -18,6 +18,24 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
+            $diskpartScript = @"
+            select disk 0
+            clean
+            create partition primary
+            format fs=ntfs quick
+            assign letter=C
+            "@
+            
+            # Write to a temporary file
+            $diskpartScript | Out-File -FilePath "C:\temp\diskpart.txt"
+            
+            # Run diskpart
+            diskpart /s "C:\temp\diskpart.txt"
+
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
            Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
                 $partitions = Get-CimInstance -Query "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='$($_.DeviceID)'} WHERE AssocClass=Win32_DiskDriveToDiskPartition"
                 $totalSize = $_.Size
