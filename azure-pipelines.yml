@@ -18,19 +18,14 @@ steps:
       inputs:
         targetType: 'inline'
         script: |
-            $diskpartScript = @"
-            select disk 0
-            clean
-            create partition primary
-            format fs=ntfs quick
-            assign letter=C
-            "@
+            # Get the OS drive (usually C:)
+            $partition = Get-Partition -DriveLetter C
             
-            # Write to a temporary file
-            $diskpartScript | Out-File -FilePath "C:\diskpart.txt"
+            # Get the physical disk associated with the OS partition
+            $disk = Get-Disk -Number $partition.DiskNumber
             
-            # Run diskpart
-            diskpart /s "C:\diskpart.txt"
+            # Resize the partition to use the full disk space
+            Resize-Partition -DiskNumber $disk.Number -PartitionNumber $partition.PartitionNumber -Size ($disk | Select-Object -ExpandProperty Size)
 
     - task: PowerShell@2
       inputs:
