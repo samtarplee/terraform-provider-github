@@ -1,0 +1,47 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool: eit-uks-prd-win-ado-agent-pool
+
+
+steps:
+    - script: |
+        wmic logicaldisk get DeviceID, VolumeName, FileSystem, FreeSpace, Size
+        wmic logicaldisk where "DeviceID='C:'" get FreeSpace, Size
+      displayName: 'Run a one-line script'
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+            # Get the OS drive (usually C:)
+            $partition = Get-Partition -DriveLetter C
+            
+            # Get the physical disk associated with the OS partition
+            $disk = Get-Disk -Number $partition.DiskNumber
+
+            $size = (Get-PartitionSupportedSize -DiskNumber $disk.Number -PartitionNumber $partition.PartitionNumber)
+            Write-Host "Size: $size"
+            
+    - task: PowerShell@2
+      inputs:
+        targetType: 'inline'
+        script: |
+           Get-CimInstance -ClassName Win32_DiskDrive | ForEach-Object {
+                $partitions = Get-CimInstance -Query "ASSOCIATORS OF {Win32_DiskDrive.DeviceID='$($_.DeviceID)'} WHERE AssocClass=Win32_DiskDriveToDiskPartition"
+                $totalSize = $_.Size
+                $allocatedSize = ($partitions | Measure-Object -Property Size -Sum).Sum
+                $unallocatedSize = ($totalSize - $allocatedSize) / 1GB
+                [PSCustomObject]@{
+                    Disk                = $_.DeviceID
+                    TotalSizeGB        = [math]::round($totalSize / 1GB, 2)
+                    AllocatedSizeGB    = [math]::round($allocatedSize / 1GB, 2)
+                    UnallocatedSizeGB   = [math]::round($unallocatedSize, 2)
+                }
+           }
+
+            
